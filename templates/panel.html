@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel - LaoGenerator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .head-bar {
+            background-color: #007bff;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 10;
+        }
+        .head-bar h1 {
+            margin: 0;
+            font-size: 20px;
+        }
+        .logout-btn {
+            padding: 8px 15px;
+            background-color: white;
+            color: #007bff;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+            text-decoration: none;
+        }
+        .logout-btn:hover {
+            background-color: #e0e0e0;
+        }
+        .content {
+            margin: 80px auto 20px;
+            max-width: 600px;
+            padding: 0 20px;
+        }
+        .item {
+            background: #fff;
+            padding: 15px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 10px;
+            align-items: center;
+        }
+        .item-header {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 10px;
+            align-items: center;
+        }
+        .color-box {
+            width: 20px;
+            height: 20px;
+        }
+        .delete-btn {
+            background-color: transparent;
+            color: #ff4d4d;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        .delete-btn:hover {
+            color: #e60000;
+        }
+        .item-content {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #555;
+            grid-column: span 2;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 20;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            width: 90%;
+            max-width: 400px;
+            box-sizing: border-box;
+        }
+        .modal-header {
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .modal label {
+            font-size: 14px;
+            margin-bottom: 5px;
+            display: block;
+        }
+        .modal input,
+        .modal textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            box-sizing: border-box;
+        }
+        .modal button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 3px;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .modal .add-btn {
+            background-color: #28a745; /* 綠色 */
+        }
+        .modal .add-btn:hover {
+            background-color: #218838;
+        }
+        .modal .modal-close {
+            background-color: #007bff; /* 藍色 */
+            margin-top: 10px;
+            text-align: center;
+            padding: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 3px;
+            color: white;
+        }
+        .modal .modal-close:hover {
+            background-color: #0056b3;
+        }
+
+        /* 固定在右下角的圓形按鈕 */
+        .add-btn-circle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background-color: #28a745; /* 綠色 */
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.2s;
+        }
+        .add-btn-circle:hover {
+            background-color: #218838; /* 更深的綠色 */
+        }
+
+        /* 用CSS顯示模態框 */
+        #modal-trigger:checked + .modal {
+            display: flex;
+        }
+
+        /* 版權標示樣式 */
+        .copyright {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            font-size: 14px;
+            margin-top: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <div class="head-bar">
+        <h1>Panel</h1>
+        <a class="logout-btn" href="/logout" disabled>{{ user }} / Logout</a>
+    </div>
+    <div class="content">
+        {% for l in laos %}
+        <div class="item">
+            <div class="item-header">
+                <div><span class="color-box"></span>{{ l[1] }}</div>
+                <a href="/api/delpage/{{ l[3] }}" class="delete-btn">Delete</a>
+            </div>
+            <div class="item-content">{{ l[0] }}</div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- 彈出式模態框 -->
+    <input type="checkbox" id="modal-trigger" style="display:none;">
+    <div class="modal">
+        <div class="modal-content">
+            <form action="/api/page" method="POST">
+                <div class="modal-header">New</div>
+
+                <label for="name">Subdomain:</label>
+                <input type="text" id="name" name="subdomain" placeholder="example: wha13" required>
+
+                <label for="color">Text Color:</label>
+                <input type="color" id="color" name="color" value="#0000ac" required>
+
+                <label for="content">Name:</label>
+                <input type="text" id="content" name="name" placeholder="example: 鯨鯊喵" required>
+
+                <button class="add-btn" type="submit">Add</button>
+                <label for="modal-trigger" class="modal-close">Cancel</label>
+            </form>
+        </div>
+    </div>
+
+    <!-- 固定在右下角的添加按鈕 -->
+    <label for="modal-trigger" class="add-btn-circle">+</label>
+
+    <!-- (沒有)版權標示 -->
+    <div class="copyright">
+        🦊🌽 2024 p23 & ChatGPT(I don't have enough money to upgrade my GPT). Shirakami Fubuki is the cutest.
+    </div>
+</body>
+</html>
