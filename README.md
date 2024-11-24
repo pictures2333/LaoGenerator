@@ -1,5 +1,9 @@
 強者我朋友，所以我要給他弄一個專屬(sub)domain來讓大家知道他超強!!!
 
+Available on [panel.is.佬.tw](https://panel.is.佬.tw)
+
+Thanks [ChiLin.H](https://neko70.net)
+
 ### config
 config.py
 ```python
